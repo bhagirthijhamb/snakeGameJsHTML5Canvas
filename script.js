@@ -10,16 +10,62 @@ $(document).ready(function(){
     ];
 
     const snakeWidth = snakeHeight = 10;
+    const blockSize = 10;
 
     // ctx.fillStyle = 'red';
     // ctx.fillRect(50, 100, 10, 10);
 
-    drawSnake();
+    // to move the snake
+    setInterval(gameLoop, 300);
 
+    function gameLoop() {
+        // console.log('loop running'); // check if loop is running
+        clearCanvas();
+        moveSnake(); // call moveSnake before drawSnake() 
+        drawSnake(); // call drawSnake() every 1s
+        
+    }   
+
+
+    // constants for the keys to be used control the snake
     const left = 37;
     const up = 38;
     const right = 39;
     const down = 40;
+
+    // set the key press to be down key when the game starts
+    let keyPressed = down;
+
+    // Move the snake
+    // head will move (will write logic for this), others square will follow the head block
+
+    function moveSnake() {
+        $.each(snake, function (index, value) {
+            snake[index].oldX = value.x;
+            snake[index].oldY = value.y;
+
+            // head
+            if (index == 0) {
+                if (keyPressed === down) {
+                    snake[index].y = value.y + blockSize;
+                } else if (keyPressed === up) {
+                    snake[index].y = value.y - blockSize;
+                } else if (keyPressed === right) {
+                    snake[index].x = value.x + blockSize;
+                } else if (keyPressed === left) {
+                    snake[index].x = value.x - blockSize;
+                }
+            } 
+            // body
+            else {
+                snake[index].x = snake[index - 1].oldX;
+                snake[index].y = snake[index - 1].oldY;
+            }
+        });
+    }
+
+
+    drawSnake();
 
     // draw snake
     function drawSnake() {
@@ -30,4 +76,9 @@ $(document).ready(function(){
             ctx.strokeRect(value.x, value.y, snakeWidth, snakeHeight);
         });
     } 
+
+    // clear canvas
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 });
