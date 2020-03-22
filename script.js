@@ -10,24 +10,13 @@ $(document).ready(function(){
     ];
 
     // food object
-    const food = { x: 200, y: 200, eaten: false };
+    let food = { x: 200, y: 200, eaten: false };
 
     const snakeWidth = snakeHeight = 10;
     const blockSize = 10;
 
     // ctx.fillStyle = 'red';
     // ctx.fillRect(50, 100, 10, 10);
-
-    // to move the snake
-    setInterval(gameLoop, 400);
-
-    function gameLoop() {
-        // console.log('loop running'); // check if loop is running
-        clearCanvas();
-        drawFood();
-        moveSnake(); // call moveSnake before drawSnake() 
-        drawSnake(); // call drawSnake() every 1s        
-    }   
 
     // constants for the keys to be used control the snake
     const left = 37;
@@ -38,6 +27,18 @@ $(document).ready(function(){
     // set the key press to be down key when the game starts
     let keyPressed = down;
     let score = 0;
+    let game;
+
+    // to move the snake
+    game = setInterval(gameLoop, 400);
+
+    function gameLoop() {
+        // console.log('loop running'); // check if loop is running
+        clearCanvas();
+        drawFood();
+        moveSnake(); // call moveSnake before drawSnake() 
+        drawSnake(); // call drawSnake() every 1s        
+    }
 
     // Move the snake
     // head will move (will write logic for this), others square will follow the head block
@@ -81,11 +82,18 @@ $(document).ready(function(){
             // All the operations are done for the head
             // head eats food & head collides itself and sides
             if(index == 0) {
+                // game over condition, head hitting own body
+                if(collided(value.x, value.y)){
+                    // console.log('game over');
+                    gameOver();
+                }
+
                 if(didEatFood(value.x, value.y)) {
                     // console.log('Yeyy food !');
                     score++;
                     $('#score').text(score);
                     makeSnakeBigger();
+                    food.eaten = true
                 }
             }
         });
@@ -98,9 +106,18 @@ $(document).ready(function(){
         })
     }
 
+    function collided(x, y) {
+        return snake.filter(function(value, index){
+            return index != 0 && value.x == x && value.y == y;
+        }).length > 0 || x < 0 || x > canvas.width || y < 0 || y > canvas.height;
+    }
+
     // draw Food
     function drawFood() {
         ctx.fillStyle = 'yellow';
+        if(food.eaten == true){
+            food = getNewPositionForFood();
+        }
         ctx.fillRect(food.x, food.y, snakeWidth, snakeHeight);
     }
 
@@ -139,6 +156,51 @@ $(document).ready(function(){
             key = (keyPressed != left) ? tempKey : keyPressed;
         }
         return key;
+    }
+
+    // Game over function
+    function gameOver() {
+        clearInterval(game);
+        alert('Game Over');
+    }
+
+    // Foods new position should not be on the snakeitself
+    function getNewPositionForFood(){
+        // get all the xs and ys from snake body
+        let xArr = yArr = [], xy;
+        $.each(snake, function(index, value){
+            if($.inArray(value.x, xArr) != -1){
+                xArr.push(value.x);
+            }
+            if($.inArray(value.y, yArr) == -1) {
+                yArr.push(value.y);
+            }
+        });
+        xy = getEmptyXY(xArr, yArr);
+        return xy;
+    }
+
+    function getEmptyXY(xArr, yArr) {
+        let newX, newY;
+        newX = getRandomNumber(canvas.width - 10, 10);
+        newY = getRandomNumber(canvas.height - 10, 10);
+
+        // check if this x and y together are not where the position (current) of the snake is
+        if($.inArray(newX, newY) == -1 && $.inArray(newY, yArr) != -1) {
+            return  {
+                x: newX,
+                y: newY,
+                eaten: false
+            };
+        } else {
+            return getEmptyXY(xArr, yArr);
+        }
+    }
+
+    function getRandomNumber(max, multipleOf) {
+        let result = Math.floor(Math.random() * max);
+        result = (result % 10 == 0) ? result : result + (multipleOf - result % 10);
+        return result;
     }
 });
 
