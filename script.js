@@ -37,6 +37,7 @@ $(document).ready(function(){
 
     // set the key press to be down key when the game starts
     let keyPressed = down;
+    let score = 0;
 
     // Move the snake
     // head will move (will write logic for this), others square will follow the head block
@@ -76,6 +77,16 @@ $(document).ready(function(){
             ctx.fillRect(value.x, value.y, snakeWidth, snakeHeight);
             ctx.strokeStyle = 'white';
             ctx.strokeRect(value.x, value.y, snakeWidth, snakeHeight);
+
+            // All the operations are done for the head
+            // head eats food & head collides itself and sides
+            if(index == 0) {
+                if(didEatFood(value.x, value.y)) {
+                    // console.log('Yeyy food !');
+                    score++;
+                    $('#score').text(score);
+                }
+            }
         });
     } 
 
@@ -83,6 +94,11 @@ $(document).ready(function(){
     function drawFood() {
         ctx.fillStyle = 'yellow';
         ctx.fillRect(food.x, food.y, snakeWidth, snakeHeight);
+    }
+
+    //
+    function didEatFood(x, y) {
+        return food.x == x && food.y == y;
     }
 
 
