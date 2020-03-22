@@ -81,4 +81,27 @@ $(document).ready(function(){
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
+
+    // Listen for the 'keydown' event
+    $(document).keydown(function(e) {
+        // keyPressed = e.which;
+        // console.log(keyPressed);
+
+        keyPressed = checkKeyIsAllowed(e.which);
+    });
+
+    // Check if the key is allowed
+    function checkKeyIsAllowed(tempKey) {
+        let key;
+        if (tempKey == down) {
+            key = (keyPressed != up) ? tempKey : keyPressed;
+        } else if (tempKey == up) {
+            key = (keyPressed != down) ? tempKey : keyPressed;
+        } else if (tempKey == left) {
+            key = (keyPressed != right) ? tempKey : keyPressed;
+        } else if (tempKey == right) {
+            key = (keyPressed != left) ? tempKey : keyPressed;
+        }
+        return key;
+    }
 });
