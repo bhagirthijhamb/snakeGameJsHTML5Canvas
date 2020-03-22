@@ -9,6 +9,9 @@ $(document).ready(function(){
         { x: 50, y: 80, oldX: 0, oldY: 0 } // body
     ];
 
+    // food object
+    const food = { x: 200, y: 200, eaten: false };
+
     const snakeWidth = snakeHeight = 10;
     const blockSize = 10;
 
@@ -16,16 +19,15 @@ $(document).ready(function(){
     // ctx.fillRect(50, 100, 10, 10);
 
     // to move the snake
-    setInterval(gameLoop, 300);
+    setInterval(gameLoop, 400);
 
     function gameLoop() {
         // console.log('loop running'); // check if loop is running
         clearCanvas();
+        drawFood();
         moveSnake(); // call moveSnake before drawSnake() 
-        drawSnake(); // call drawSnake() every 1s
-        
+        drawSnake(); // call drawSnake() every 1s        
     }   
-
 
     // constants for the keys to be used control the snake
     const left = 37;
@@ -77,6 +79,13 @@ $(document).ready(function(){
         });
     } 
 
+    // draw Food
+    function drawFood() {
+        ctx.fillStyle = 'yellow';
+        ctx.fillRect(food.x, food.y, snakeWidth, snakeHeight);
+    }
+
+
     // clear canvas
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -87,7 +96,10 @@ $(document).ready(function(){
         // keyPressed = e.which;
         // console.log(keyPressed);
 
-        keyPressed = checkKeyIsAllowed(e.which);
+        // make sure the key pressed is one of up, down, left, right
+        if ($.inArray(e.which, [down, up, left, right]) != -1){ // otherwise dont do anything
+            keyPressed = checkKeyIsAllowed(e.which);
+        }
     });
 
     // Check if the key is allowed
