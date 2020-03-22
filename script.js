@@ -85,10 +85,18 @@ $(document).ready(function(){
                     // console.log('Yeyy food !');
                     score++;
                     $('#score').text(score);
+                    makeSnakeBigger();
                 }
             }
         });
     } 
+
+    function makeSnakeBigger() {
+        snake.push({
+            x: snake[snake.length - 1].oldX,
+            y: snake[snake.length - 1].oldY
+        })
+    }
 
     // draw Food
     function drawFood() {
@@ -133,3 +141,5 @@ $(document).ready(function(){
         return key;
     }
 });
+
+// whenever snake eats food push one object to the last position of the array for last box of snake body
